@@ -1,2 +1,18 @@
----
-# tasks file for bamboo_remote_agent_window
+- name: Install role's required chocolatey packages
+  win_chocolatey:
+    name: "{{ item }}"
+    state: present
+  with_items: "role_chocolatey_packages"
+
+- name: Ensure the bamboo_agent_home {{ bamboo_agent_home }} exist
+  file:
+    path: "{{ bamboo_agent_home }}"
+    state: directory
+
+- name: Download the bamboo_agent_jarfile from bamboo_agent_jarfile_url {{ bamboo_agent_jarfile_url }}
+  win_get_url:
+    url: "{{ bamboo_agent_jarfile_url }}"
+    dest: "{{ bamboo_agent_home }}\\{{ bamboo_agent_jarfile_name }}"
+
+- name: Run the bamboo_remote_agent wrapper to install bamboo agent service
+  win_command: "{{ bamboo_agent_launch_cmd }}"
