@@ -2,7 +2,7 @@
   win_chocolatey:
     name: "{{ item }}"
     state: present
-  with_items: "role_chocolatey_packages"
+  with_items: "{{ role_chocolatey_packages }}"
 
 - name: Ensure the bamboo_agent_home {{ bamboo_agent_home }} exist
   file:
