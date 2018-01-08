@@ -5,14 +5,16 @@ build_project_depends_chocolatey_packages:
   - 7zip
   - git
   - dotnet4.5
-  - windows-sdk-8.1
   - dotnetcore-sdk
+  - windows-sdk-8.1
   # see if we needed these pkgs
   #- netfx-4.5.2-devpack
   #- windows-sdk-10.1
 
 role_chocolatey_packages: "{{ bamboo_agent_depends_chocolatey_packages + build_project_depends_chocolatey_packages }}"
-
+# Enforce second drive setup to hold bamboo files. If you do not you will get
+# error. Ansible is not so great to report error of such thing it only return
+# 500 error from powershell server though
 bamboo_agent_home: "D:\\bamboo_agent"
 bamboo_agent_jarfile_name: atlassian-bamboo-agent-installer-5.15.7.jar
 bamboo_agent_jarfile_url: "https://ci.xvt.technology/agentServer/agentInstaller/{{ bamboo_agent_jarfile_name }}"
