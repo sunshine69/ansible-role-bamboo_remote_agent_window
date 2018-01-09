@@ -15,9 +15,12 @@ role_chocolatey_packages: "{{ bamboo_agent_depends_chocolatey_packages + build_p
 # Enforce second drive setup to hold bamboo files. If you do not you will get
 # error. Ansible is not so great to report error of such thing it only return
 # 500 error from powershell server though
-bamboo_agent_home: "D:\\bamboo_agent"
+bamboo_agent_home: 'c:\bamboo_agent'
 bamboo_agent_jarfile_name: atlassian-bamboo-agent-installer-5.15.7.jar
 bamboo_agent_jarfile_url: "https://ci.xvt.technology/agentServer/agentInstaller/{{ bamboo_agent_jarfile_name }}"
 bamboo_agent_server_url: "https://ci.xvt.technology/agentServer/"
 bamboo_agent_server_hash: "set_in_inventory"
-bamboo_agent_launch_cmd: "java -Dbamboo.home={{ bamboo_agent_home }} -jar  {{ bamboo_agent_home }}\\{{ bamboo_agent_jarfile_name }} {{ bamboo_agent_server_url }} -t {{ bamboo_agent_server_hash }}"
+# bamboo agent bug? Set bamboo.home makes the server refused agent connection
+# with auth failed even the token is correct.
+#bamboo_agent_launch_cmd: "java -Dbamboo.home={{ bamboo_agent_home }} -jar  {{ bamboo_agent_home }}\\{{ bamboo_agent_jarfile_name }} {{ bamboo_agent_server_url }} -t {{ bamboo_agent_server_hash }}"
+bamboo_agent_launch_cmd: 'java -jar  {{ bamboo_agent_home }}\{{ bamboo_agent_jarfile_name }} {{ bamboo_agent_server_url }} -t {{ bamboo_agent_server_hash }}'
