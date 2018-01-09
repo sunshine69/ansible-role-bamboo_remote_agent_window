@@ -12,7 +12,8 @@
 - name: Download the bamboo_agent_jarfile from bamboo_agent_jarfile_url {{ bamboo_agent_jarfile_url }}
   win_get_url:
     url: "{{ bamboo_agent_jarfile_url }}"
-    dest: "{{ bamboo_agent_home }}\\{{ bamboo_agent_jarfile_name }}"
+    dest: '{{ bamboo_agent_home }}\{{ bamboo_agent_jarfile_name }}'
 
+# Does it return to ansible?
 - name: Run the bamboo_remote_agent wrapper to install bamboo agent service
   win_command: "{{ bamboo_agent_launch_cmd }}"
