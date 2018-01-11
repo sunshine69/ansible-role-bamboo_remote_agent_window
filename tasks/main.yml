@@ -20,31 +20,50 @@
   register: detect_installer_run
 
 # Does it return to ansible?
-#- name: Deploy the temporary script
-#  win_copy:
-#    dest: '{{ bamboo_agent_home }}\ansible-start-installer.ps1'
-#    content: '{{ bamboo_agent_launch_cmd }}'
+- name: Deploy the custom setup ps1 script
+  win_copy:
+    dest: '{{ bamboo_agent_home }}\ansible-custom-setup.ps1'
+    src: 'ansible-custom-setup.ps1'
 
-#- name: Make temporary schedule task
-#  win_scheduled_task:
-#    name: TaskName2
-#    description: Run a PowerShell script
-#    executable: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
-#    arguments: 'Start-Job -FilePath {{ bamboo_agent_home }}\ansible-start-installer.ps1'
-#    time: 6pm
-#    frequency: once
-#    state: present
-#    enabled: yes
-#    user: Administrator
-#    runlevel: highest
-
+# WARNING Brutal hack followed!
 - name: Run the bamboo_remote_agent wrapper to install bamboo agent service
-  #win_command: 'powershell Start-Job -FilePath {{ bamboo_agent_home }}\ansible-start-installer.ps1'
   win_command: '{{ bamboo_agent_launch_cmd }}'
   async: 180
   poll: 10
   when: not detect_installer_run.stat.exists
   ignore_errors: yes
+
+# See https://confluence.atlassian.com/bamboo/configuring-remote-agent-capabilities-using-bamboo-capabilities-properties-289276849.html
+- name: Deploy the bamboo custom capabilities files
+  win_template:
+    src: bamboo-capabilities.properties.j2
+    dest: '{{ bamboo_agent_home }}\bin\bamboo-capabilities.properties'
+
+- name: create a user account that runs bamboo-agent (Andrew said it fixes the build from bamboo server job)
+  win_user:
+    name: '{{ bamboo_agent_user_name }}'
+    groups:
+      - Users
+    password: '{{ bamboo_agent_user_password }}'
+    state: present
+  when: bamboo_agent_user_password
+
+- name: Ensure that system32 and Powershell are present on the global system path, and in the specified order
+  win_path:
+    elements:
+    - '%SystemRoot%'
+    - '%SystemRoot%\system32'
+    - '%SystemRoot%\system32\WindowsPowerShell\v1.0'
+
+- name: Allow user {{ bamboo_agent_user_name }} to have full right under {{ bamboo_agent_home }}
+  win_acl:
+    user: '{{ bamboo_agent_user_name }}'
+    path: '{{ bamboo_agent_home }}'
+    rights: FullControl
+    type: allow
+    state: present
+    inherit: ContainerInherit, ObjectInherit
+    propagation: 'None'
 
 - name: Check if service bamboo-remote-agent is installed
   win_service:
@@ -60,4 +79,5 @@
     name: bamboo-remote-agent
     start_mode: auto
     state: started
-  when: service_info.exists
+    username: '{{ bamboo_agent_user_name }}'
+    password: '{{ bamboo_agent_user_password }}'
