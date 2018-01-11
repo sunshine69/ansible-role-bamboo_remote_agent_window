@@ -14,6 +14,50 @@
     url: "{{ bamboo_agent_jarfile_url }}"
     dest: '{{ bamboo_agent_home }}\{{ bamboo_agent_jarfile_name }}'
 
+- name: Detect if we already run the installer
+  win_stat:
+    path: '{{ bamboo_agent_home }}\bin\InstallBambooAgent-NT.bat'
+  register: detect_installer_run
+
 # Does it return to ansible?
+#- name: Deploy the temporary script
+#  win_copy:
+#    dest: '{{ bamboo_agent_home }}\ansible-start-installer.ps1'
+#    content: '{{ bamboo_agent_launch_cmd }}'
+
+#- name: Make temporary schedule task
+#  win_scheduled_task:
+#    name: TaskName2
+#    description: Run a PowerShell script
+#    executable: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+#    arguments: 'Start-Job -FilePath {{ bamboo_agent_home }}\ansible-start-installer.ps1'
+#    time: 6pm
+#    frequency: once
+#    state: present
+#    enabled: yes
+#    user: Administrator
+#    runlevel: highest
+
 - name: Run the bamboo_remote_agent wrapper to install bamboo agent service
-  win_command: "{{ bamboo_agent_launch_cmd }}"
+  #win_command: 'powershell Start-Job -FilePath {{ bamboo_agent_home }}\ansible-start-installer.ps1'
+  win_command: '{{ bamboo_agent_launch_cmd }}'
+  async: 180
+  poll: 10
+  when: not detect_installer_run.stat.exists
+  ignore_errors: yes
+
+- name: Check if service bamboo-remote-agent is installed
+  win_service:
+    name: bamboo-remote-agent
+  register: service_info
+
+- name: Install the agent wrapper service
+  win_command: '{{ bamboo_agent_home }}\bin\InstallBambooAgent-NT.bat'
+  when: not service_info.exists
+
+- name: Start the bamboo-remote-agent service if not started yet
+  win_service:
+    name: bamboo-remote-agent
+    start_mode: auto
+    state: started
+  when: service_info.exists
