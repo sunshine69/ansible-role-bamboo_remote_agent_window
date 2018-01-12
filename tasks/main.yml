@@ -84,11 +84,46 @@
     username: '{{ ansible_env.USERDOMAIN }}\{{ bamboo_agent_user_name }}'
     password: '{{ bamboo_agent_user_password }}'
 
+- name: Copy the xvt.technology certificate to be used for PS client to talk to the deployment target host
+  win_copy:
+    src: "{{ powershell_certificate_file_path }}"
+    dest: '{{ bamboo_agent_home }}\xvt.cert'
+
+- block:
+    - name: Get all IIS servers fact (target deployment hosts) non-prod
+      ec2_remote_facts:
+        region: "{{ region }}"
+        profile: "{{ target_profile_non_prod }}"
+        filters:
+          instance-state-name: [running, stopped]
+          "tag:Application": "{{ target_role_type}}"
+      register: ec2facts
+
+    - name: Get all IIS servers fact (target deployment hosts) prod
+      ec2_remote_facts:
+        region: "{{ region }}"
+        profile: "{{ target_profile_prod }}"
+        filters:
+          instance-state-name: [running, stopped]
+          "tag:Application": "{{ target_role_type}}"
+      register: ec2facts_prod
+
+    - name: Set fact for target_deployment_hosts to be used in custom ps scripts
+      set_fact:
+        target_deployment_hosts: "{{ ec2facts.instances|map(attribute='public_ip_address')|list + ec2facts_prod.instances|map(attribute='public_ip_address')|list }}"
+
+  when:
+    - target_profile_non_prod is defined and target_profile_non_prod
+    - target_profile_prod is defined and target_profile_prod
+    - target_role_type is defined and target_role_type
+  vars:
+    ansible_connection: local
+
 # These are the command Andrew needs to run - supposed to be idempotant
 - name: Deploy the custom setup ps1 script
-  win_copy:
+  win_template:
     dest: '{{ bamboo_agent_home }}\ansible-custom-setup.ps1'
-    src: 'ansible-custom-setup.ps1'
+    src: 'ansible-custom-setup.ps1.j2'
 
 - name: Run the custom setup script
   win_command: 'powershell {{ bamboo_agent_home }}\ansible-custom-setup.ps1'
