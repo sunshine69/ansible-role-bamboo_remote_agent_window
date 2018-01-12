@@ -48,6 +48,14 @@
     state: present
   when: bamboo_agent_user_password
 
+- name: Deploy the Log On As Service right script
+  win_template:
+    src: GrantLogOnAsServiceRight.vbs.j2
+    dest: '{{ bamboo_agent_home }}\GrantLogOnAsServiceRight.vbs'
+
+- name: Run the GrantLogOnAsServiceRight.vbs to grant to bamboo user
+  win_command: 'cscript //B {{ bamboo_agent_home }}\GrantLogOnAsServiceRight.vbs'
+
 - name: Ensure that system32 and Powershell are present on the global system path, and in the specified order
   win_path:
     elements:
