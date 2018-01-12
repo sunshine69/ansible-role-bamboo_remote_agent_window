@@ -19,12 +19,6 @@
     path: '{{ bamboo_agent_home }}\bin\InstallBambooAgent-NT.bat'
   register: detect_installer_run
 
-# Does it return to ansible?
-- name: Deploy the custom setup ps1 script
-  win_copy:
-    dest: '{{ bamboo_agent_home }}\ansible-custom-setup.ps1'
-    src: 'ansible-custom-setup.ps1'
-
 # WARNING Brutal hack followed!
 - name: Run the bamboo_remote_agent wrapper to install bamboo agent service
   win_command: '{{ bamboo_agent_launch_cmd }}'
@@ -47,6 +41,14 @@
     password: '{{ bamboo_agent_user_password }}'
     state: present
   when: bamboo_agent_user_password
+
+- name: Deploy the Log On As Service right script
+  win_template:
+    src: GrantLogOnAsServiceRight.vbs.j2
+    dest: '{{ bamboo_agent_home }}\GrantLogOnAsServiceRight.vbs'
+
+- name: Run the GrantLogOnAsServiceRight.vbs to grant to bamboo user
+  win_command: 'cscript //B {{ bamboo_agent_home }}\GrantLogOnAsServiceRight.vbs'
 
 - name: Ensure that system32 and Powershell are present on the global system path, and in the specified order
   win_path:
@@ -79,5 +81,14 @@
     name: bamboo-remote-agent
     start_mode: auto
     state: started
-    username: '{{ bamboo_agent_user_name }}'
+    username: '{{ ansible_env.USERDOMAIN }}\{{ bamboo_agent_user_name }}'
     password: '{{ bamboo_agent_user_password }}'
+
+# These are the command Andrew needs to run - supposed to be idempotant
+- name: Deploy the custom setup ps1 script
+  win_copy:
+    dest: '{{ bamboo_agent_home }}\ansible-custom-setup.ps1'
+    src: 'ansible-custom-setup.ps1'
+
+- name: Run the custom setup script
+  win_command: 'powershell {{ bamboo_agent_home }}\ansible-custom-setup.ps1'
