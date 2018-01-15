@@ -84,11 +84,6 @@
     username: '{{ ansible_env.USERDOMAIN }}\{{ bamboo_agent_user_name }}'
     password: '{{ bamboo_agent_user_password }}'
 
-- name: Copy the xvt.technology certificate to be used for PS client to talk to the deployment target host
-  win_copy:
-    src: "{{ powershell_certificate_file_path }}"
-    dest: '{{ bamboo_agent_home }}\xvt.cert'
-
 - block:
     - name: Get all IIS servers fact (target deployment hosts) non-prod
       ec2_remote_facts:
