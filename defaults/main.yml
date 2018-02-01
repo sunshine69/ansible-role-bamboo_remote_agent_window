@@ -31,3 +31,8 @@ bamboo_token: "set_in_inventory"
 # with auth failed even the token is correct.
 #bamboo_agent_launch_cmd: 'Start-Process java "-Dbamboo.home={{ bamboo_agent_home }} -jar {{ bamboo_agent_home }}\{{ bamboo_agent_jarfile_name }} {{ bamboo_agent_server_url }} -t {{ bamboo_agent_server_hash }}"'
 bamboo_agent_launch_cmd: 'java -Dbamboo.home={{ bamboo_agent_home }} -jar {{ bamboo_agent_home }}\{{ bamboo_agent_jarfile_name }} {{ bamboo_agent_server_url }} -t {{ bamboo_token }}'
+
+bamboo_agent_capabilities: |
+  Project={{ project_name }}-{{ env }}
+  system.builder.nunit3.Nunit=C:\\Program\ Files\ (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe
+  {{ bamboo_agent_extra_capabilities|default('') }}
