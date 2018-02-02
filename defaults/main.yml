@@ -33,5 +33,5 @@ bamboo_token: "set_in_inventory"
 bamboo_agent_launch_cmd: 'java -Dbamboo.home={{ bamboo_agent_home }} -jar {{ bamboo_agent_home }}\{{ bamboo_agent_jarfile_name }} {{ bamboo_agent_server_url }} -t {{ bamboo_token }}'
 
 bamboo_agent_capabilities: |
-  {{ cross_account_capability }}=yes
+  {{ cross_account_capability + '=yes' if cross_account_capability is defined and cross_account_capability else '' }}
   {{ bamboo_agent_extra_capabilities|default('') }}
