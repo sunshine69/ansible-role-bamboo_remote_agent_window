@@ -20,6 +20,7 @@ Role Variables
 - `bamboo_agent_depends_chocolatey_packages` - optional
 - `build_project_depends_chocolatey_packages` - optional
 - `bamboo_agent_build_project_extra_chocolatey_packages` - optional - extra packages in addition to the two above.
+- `bamboo_agent_build_project_npm_chocolatey_packages` - optional - extra npm packages required.
 - `role_chocolatey_packages` - optional - is the union of the three above. They
    have default values required for bamboo-agent to build dotnetcore and window SDK
 
