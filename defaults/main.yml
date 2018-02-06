@@ -1,10 +1,12 @@
 bamboo_agent_depends_chocolatey_packages:
   - jdk8
 
+# This is for building dotnetcore, in window and the utils required
 build_project_depends_chocolatey_packages:
   - 7zip
   - git
   - nunit.install
+  - nodejs.install
   - dotnet4.5
   - dotnetcore-sdk
   - windows-sdk-8.0
@@ -15,7 +17,13 @@ build_project_depends_chocolatey_packages:
   #- netfx-4.5.2-devpack
   #- windows-sdk-10.1
 
-role_chocolatey_packages: "{{ bamboo_agent_depends_chocolatey_packages + build_project_depends_chocolatey_packages }}"
+# Designed to be added in inventory. As of this time these below are not
+# compulsary but it is likely we are going to use it so add it in
+bamboo_agent_build_project_extra_chocolatey_packages:
+  - npmtaskrunner
+  - yarn
+
+role_chocolatey_packages: "{{ bamboo_agent_depends_chocolatey_packages + build_project_depends_chocolatey_packages + bamboo_agent_build_project_extra_chocolatey_packages }}"
 # Enforce second drive setup to hold bamboo files. If you do not you will get
 # error. Ansible is not so great to report error of such thing it only return
 # 500 error from powershell server though

@@ -19,8 +19,9 @@ Role Variables
 
 - `bamboo_agent_depends_chocolatey_packages` - optional
 - `build_project_depends_chocolatey_packages` - optional
-- `role_chocolatey_packages` - optional - is the union of the two above. They
-   have default values required for bamboo-agent
+- `bamboo_agent_build_project_extra_chocolatey_packages` - optional - extra packages in addition to the two above.
+- `role_chocolatey_packages` - optional - is the union of the three above. They
+   have default values required for bamboo-agent to build dotnetcore and window SDK
 
 - `bamboo_agent_user_name` - optional - default: bamboo
 - `bamboo_agent_user_password` - required - no default and need to be set in inventory vault data.
