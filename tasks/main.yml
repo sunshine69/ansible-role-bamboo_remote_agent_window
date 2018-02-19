@@ -86,7 +86,7 @@
 
 - block:
     - name: Get all IIS servers fact (target deployment hosts) non-prod
-      ec2_remote_facts:
+      ec2_instance_facts:
         region: "{{ region }}"
         profile: "{{ target_profile_non_prod }}"
         filters:
@@ -95,7 +95,7 @@
       register: ec2facts
 
     - name: Get all IIS servers fact (target deployment hosts) prod
-      ec2_remote_facts:
+      ec2_instance_facts:
         region: "{{ region }}"
         profile: "{{ target_profile_prod }}"
         filters:
