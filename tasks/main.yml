@@ -3,6 +3,7 @@
     name: "{{ item }}"
     state: present
   with_items: "{{ role_chocolatey_packages }}"
+  when: install_chocolatey_pkg|default()
 
 - name: Ensure the bamboo_agent_home {{ bamboo_agent_home }} exist
   win_file:

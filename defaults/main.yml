@@ -23,7 +23,10 @@ bamboo_agent_build_project_extra_chocolatey_packages: []
 # As of this time these below are not
 # compulsary but it is likely we are going to use it so add it in
 bamboo_agent_build_project_npm_chocolatey_packages:
-  - npmtaskrunner
+  # This npmtaskrunner install fail and no one in chocolatey fixes it yet however it may get
+  # fixed in the future. As we do not use it yet but leave it here for
+  # reference.
+  #- npmtaskrunner
   - yarn
 
 role_chocolatey_packages: "{{ bamboo_agent_depends_chocolatey_packages + build_project_depends_chocolatey_packages + bamboo_agent_build_project_extra_chocolatey_packages + bamboo_agent_build_project_npm_chocolatey_packages }}"
@@ -46,3 +49,5 @@ bamboo_agent_launch_cmd: 'java -Dbamboo.home={{ bamboo_agent_home }} -jar {{ bam
 bamboo_agent_capabilities: |
   {{ cross_account_capability + '=yes' if cross_account_capability is defined and cross_account_capability else '' }}
   {{ bamboo_agent_extra_capabilities|default('') }}
+
+dotnetsdk_version: "2.1.4"

@@ -14,9 +14,39 @@ Requirements
 
 - role win_base has been run to apply some basic window setup.
 
+Limitations - Gotchas - TODOs
+-----------------------------
+
+- There is no auto detection of dotnet SDK version thus in
+  ansible-custom-setup.ps1.j2 it is hardcoded into the current working version
+  2.1.4.
+
+- The latest version of the build will fail to build our legacy code. Working
+  build is using msbuild v15.5.180.51428, but non-working is trying to use
+  v15.7.177.53362 which seems to have an issue loading
+  `System.Runtime.InteropServices.RuntimeInformation,
+  Version=4.0.1.0,Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a`
+
+The non working version of dotnet sdk is as of now - 2.1.200
+
+- There is not a way to fix the chocolatey version yet.
+
+- Bamboo has a bug which requires us to remove the env PATH in user bamboo.
+  There is a PS script to do that but it seems not working reliably. If build
+  plan fail right away wihtout saying anything except the exit code -1 that
+  means it does not find the powershell.exe. Then remove the PATH of the user
+  bamboo manually (enable RDP for user bamboo and RDP in, remove the path using
+  the PS scripts or manually run regedit to remove it `REG delete
+  HKCU\Environment /F /V PATH`
+
+
 Role Variables
 --------------
 
+- `install_chocolatey_pkg` - Optional - Flag to enable install the chocolatey packages - default is no.
+  It is usefull if you rebuild bamboo agent only on top of a existing working
+  dotnet build and SDK system and do not want to install the latest version.
+  Set it to True is you want to pull the latest version but it might break.
 - `bamboo_agent_depends_chocolatey_packages` - optional
 - `build_project_depends_chocolatey_packages` - optional
 - `bamboo_agent_build_project_extra_chocolatey_packages` - optional - extra packages in addition to the two above.
@@ -30,7 +60,7 @@ Role Variables
 These above variables purposes are explainable by its name.
 
 - `bamboo_agent_home` - optional - default: c:\bamboo_agent
- 
+
  directory where bamboo agent will put all its files and
  its build files etc. Should be large enough.
 
@@ -42,7 +72,7 @@ These above variables purposes are explainable by its name.
 
 - `bamboo_agent_jarfile_url` - Optional - Values might need to be updated in role
  or provided in inventory if bamboo server changes.
- 
+
  The full url to get the agent jar file - example:
  "https://ci.xvt.technology/agentServer/agentInstaller/{{ bamboo_agent_jarfile_name }}"
 
@@ -63,10 +93,10 @@ These above variables purposes are explainable by its name.
 
 - `bamboo_agent_launch_cmd` - Optional - Default auto created based on the other
  variables above
- 
+
  The agent complete launch command.
 
-- `bamboo_agent_capabilities` - Optional - 
+- `bamboo_agent_capabilities` - Optional -
  contains the textual lines of the bamboo-capabilities.properties file to set
  our custom capabilities.
  The default value always has a variable below ...
