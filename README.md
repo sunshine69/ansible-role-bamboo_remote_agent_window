@@ -17,6 +17,10 @@ Requirements
 Role Variables
 --------------
 
+- `install_chocolatey_pkg` - Optional - Flag to enable install the chocolatey packages - default is no.
+  It is usefull if you rebuild bamboo agent only on top of a existing working
+  dotnet build and SDK system and do not want to install the latest version.
+  Set it to True is you want to pull the latest version but it might break.
 - `bamboo_agent_depends_chocolatey_packages` - optional
 - `build_project_depends_chocolatey_packages` - optional
 - `bamboo_agent_build_project_extra_chocolatey_packages` - optional - extra packages in addition to the two above.
@@ -30,7 +34,7 @@ Role Variables
 These above variables purposes are explainable by its name.
 
 - `bamboo_agent_home` - optional - default: c:\bamboo_agent
- 
+
  directory where bamboo agent will put all its files and
  its build files etc. Should be large enough.
 
@@ -42,7 +46,7 @@ These above variables purposes are explainable by its name.
 
 - `bamboo_agent_jarfile_url` - Optional - Values might need to be updated in role
  or provided in inventory if bamboo server changes.
- 
+
  The full url to get the agent jar file - example:
  "https://ci.xvt.technology/agentServer/agentInstaller/{{ bamboo_agent_jarfile_name }}"
 
@@ -63,10 +67,10 @@ These above variables purposes are explainable by its name.
 
 - `bamboo_agent_launch_cmd` - Optional - Default auto created based on the other
  variables above
- 
+
  The agent complete launch command.
 
-- `bamboo_agent_capabilities` - Optional - 
+- `bamboo_agent_capabilities` - Optional -
  contains the textual lines of the bamboo-capabilities.properties file to set
  our custom capabilities.
  The default value always has a variable below ...
