@@ -14,6 +14,28 @@ Requirements
 
 - role win_base has been run to apply some basic window setup.
 
+Limitations - Gotchas - TODOs
+-----------------------------
+
+- There is no auto detection of dotnet SDK version thus in
+  ansible-custom-setup.ps1.j2 it is hardcoded into the current working version
+  2.1.4.
+
+- The latest version of the build will fail to build our legacy code. Working build is using msbuild v15.5.180.51428, but non-working is trying to use v15.7.177.53362 which seems to have an issue loading `System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0,Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a`
+
+The non working version of dotnet sdk is as of now - 2.1.200
+
+- There is not a way to fix the chocolatey version yet.
+
+- Bamboo has a bug which requires us to remove the env PATH in user bamboo.
+  There is a PS script to do that but it seems not working reliably. If build
+  plan fail right away wihtout saying anything except the exit code -1 that
+  means it does not find the powershell.exe. Then remove the PATH of the user
+  bamboo manually (enable RDP for user bamboo and RDP in, remove the path using
+  the PS scripts or manually run regedit to remove it `REG delete
+  HKCU\Environment /F /V PATH`
+
+
 Role Variables
 --------------
 

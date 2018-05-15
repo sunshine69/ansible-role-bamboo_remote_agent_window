@@ -49,3 +49,5 @@ bamboo_agent_launch_cmd: 'java -Dbamboo.home={{ bamboo_agent_home }} -jar {{ bam
 bamboo_agent_capabilities: |
   {{ cross_account_capability + '=yes' if cross_account_capability is defined and cross_account_capability else '' }}
   {{ bamboo_agent_extra_capabilities|default('') }}
+
+dotnetsdk_version: "2.1.4"
