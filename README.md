@@ -21,7 +21,11 @@ Limitations - Gotchas - TODOs
   ansible-custom-setup.ps1.j2 it is hardcoded into the current working version
   2.1.4.
 
-- The latest version of the build will fail to build our legacy code. Working build is using msbuild v15.5.180.51428, but non-working is trying to use v15.7.177.53362 which seems to have an issue loading `System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0,Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a`
+- The latest version of the build will fail to build our legacy code. Working
+  build is using msbuild v15.5.180.51428, but non-working is trying to use
+  v15.7.177.53362 which seems to have an issue loading
+  `System.Runtime.InteropServices.RuntimeInformation,
+  Version=4.0.1.0,Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a`
 
 The non working version of dotnet sdk is as of now - 2.1.200
 
